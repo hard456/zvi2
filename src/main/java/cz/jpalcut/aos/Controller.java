@@ -27,6 +27,7 @@ import java.util.Random;
  */
 public class Controller {
 
+    public Button testButton;
     @FXML
     Button FFTButton, IFFTButton, convolutionButton, deconvolutionButton;
 
@@ -153,7 +154,7 @@ public class Controller {
                     matrix = Utils.divideMatrix(matrix);
                 }
                 else{
-                    matrix = Utils.create2DArray(bufferedImage);
+                    matrix = Utils.create2DComplexArray(bufferedImage);
                 }
 
                 matrix = fft.compute(matrix);
@@ -314,6 +315,16 @@ public class Controller {
         openMI.setDisable(false);
         saveAsMI.setDisable(false);
         FFTButton.setDisable(false);
+    }
+
+    public void testAction(){
+        int[][] matrix = Utils.create2DArray(bufferedImage);
+        AverageFilter averageFilter = new AverageFilter();
+        MedianFilter medianFilter = new MedianFilter();
+        ModelFilter modelFilter = new ModelFilter();
+        matrix = medianFilter.processIndirectFilter(matrix);
+        Utils.arrayToBufferedImage(bufferedImage, matrix);
+        showImage();
     }
 
 }

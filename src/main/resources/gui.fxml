@@ -79,6 +79,11 @@
                                 onAction="#useFilterDeconvolution" disable="true" fx:id="deconvolutionButton"
                                 focusTraversable="false"/>
 
+
+                        <Button layoutX="10.0" layoutY="430.0" mnemonicParsing="false" prefWidth="180" text="Provést"
+                                onAction="#testAction" fx:id="testButton"
+                                focusTraversable="false"/>
+
                     </children>
                 </AnchorPane>
             </left>

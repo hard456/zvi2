@@ -26,7 +26,7 @@ public class Utils {
      * @param image BufferedImage
      * @return Complex[][]
      */
-    public static Complex[][] create2DArray(BufferedImage image){
+    public static Complex[][] create2DComplexArray(BufferedImage image){
         Complex[][] array = new Complex[image.getHeight()][image.getWidth()];
         for (int i = 0; i < image.getHeight(); i++){
             for (int j = 0; j < image.getWidth(); j++){
@@ -36,6 +36,16 @@ public class Utils {
         return array;
     }
 
+
+    public static int[][] create2DArray(BufferedImage image){
+        int[][] array = new int[image.getHeight()][image.getWidth()];
+        for (int i = 0; i < image.getHeight(); i++){
+            for (int j = 0; j < image.getWidth(); j++){
+                array[i][j] = convertRGBToGrayLevel(image.getRGB(j, i));
+            }
+        }
+        return array;
+    }
     /**
      * Vytvoří Complex[][] z double[][] s počtem řádku (height) a počtem sloupců (height)
      * @param array double[][]
@@ -198,6 +208,22 @@ public class Utils {
             }
         }
         return newMatrix;
+    }
+
+    public static boolean isItemOfArray(int height, int width, int i, int j) {
+        return i >= 0 && i < height && j >= 0 && j < width;
+    }
+
+    public static BufferedImage arrayToBufferedImage(BufferedImage image, int[][] array){
+        for (int i = 0; i < array.length; i++){
+            for (int j = 0; j < array[0].length; j++){
+                if(array[i][j] > 256 || array[i][j] < 0){
+                    System.out.println(array[i][j]);
+                }
+                image.setRGB(j, i, Utils.convertGrayLevelToRGB(array[i][j]));
+            }
+        }
+        return image;
     }
 
 }
