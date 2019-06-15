@@ -3,6 +3,10 @@ package cz.jpalcut.aos;
 import org.apache.commons.math3.complex.Complex;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Třída obsahující užitečné metody pro aplikaci
@@ -36,6 +40,16 @@ public class Utils {
         return array;
     }
 
+
+    public static int[][][] create3DArray(BufferedImage[] images){
+        int[][][] array = new int[images.length][][];
+
+        for (int i = 0; i < images.length; i++){
+            array[i] = create2DArray(images[i]);
+        }
+
+        return array;
+    }
 
     public static int[][] create2DArray(BufferedImage image){
         int[][] array = new int[image.getHeight()][image.getWidth()];
@@ -224,6 +238,22 @@ public class Utils {
             }
         }
         return image;
+    }
+
+    public static boolean haveImagesSameSize(BufferedImage[] images){
+        for (int i = 1; i < images.length; i++){
+            if(images[0].getWidth() != images[i].getWidth() || images[0].getHeight() != images[i].getHeight()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static BufferedImage cloneBufferedImage(BufferedImage bi){
+            ColorModel cm = bi.getColorModel();
+            boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+            WritableRaster raster = bi.copyData(null);
+            return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
 }

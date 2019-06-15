@@ -9,11 +9,11 @@ public class AverageFilter {
         int height = array.length;
         int width = array[0].length;
 
-        int[][] medianArray = new int[height][width];
+        int[][] newArray = new int[height][width];
         List<Integer> items = new ArrayList<>();
 
-        for (int i = 0; i < array[0].length; i++) {
-            for (int j = 0; j < array.length; j++) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 if (Utils.isItemOfArray(height, width, i, j - 1)) {
                     items.add(array[i][j - 1]);
                 }
@@ -26,58 +26,40 @@ public class AverageFilter {
                 if (Utils.isItemOfArray(height, width, i + 1, j)) {
                     items.add(array[i + 1][j]);
                 }
-                medianArray[i][j] = getAverage(items);
+                items.add(array[i][j]);
+                newArray[i][j] = getAverage(items);
                 items.clear();
             }
         }
-        return medianArray;
+        return newArray;
     }
 
-    public int[][] processIndirectFilter(int[][] array) {
+    public int[][] processAreaFilter(int[][] array, int area) {
         int height = array.length;
         int width = array[0].length;
 
-        int[][] medianArray = new int[height][width];
+        int[][] newArray = new int[height][width];
         List<Integer> items = new ArrayList<>();
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
 
-        for (int i = 0; i < array[0].length; i++) {
-            for (int j = 0; j < array.length; j++) {
-
-                if (Utils.isItemOfArray(height, width, i, j - 1)) {
-                    items.add(array[i][j - 1]);
-                }
-                if (Utils.isItemOfArray(height, width, i, j + 1)) {
-                    items.add(array[i][j + 1]);
-                }
-                if (Utils.isItemOfArray(height, width, i - 1, j)) {
-                    items.add(array[i - 1][j]);
-                }
-                if (Utils.isItemOfArray(height, width, i + 1, j)) {
-                    items.add(array[i + 1][j]);
+                for (int k = i - area / 2; k <= i + area / 2; k++){
+                    for (int l = j - area / 2; l <= j + area / 2; l++){
+                        if (Utils.isItemOfArray(height, width, k, l)) {
+                            items.add(array[k][l]);
+                        }
+                    }
                 }
 
-                if (Utils.isItemOfArray(height, width, i + 1, j + 1)) {
-                    items.add(array[i + 1][j + 1]);
-                }
-                if (Utils.isItemOfArray(height, width, i - 1, j - 1)) {
-                    items.add(array[i - 1][j - 1]);
-                }
-                if (Utils.isItemOfArray(height, width, i + 1, j - 1)) {
-                    items.add(array[i + 1][j - 1]);
-                }
-                if (Utils.isItemOfArray(height, width, i - 1, j + 1)) {
-                    items.add(array[i - 1][j + 1]);
-                }
-
-                medianArray[i][j] = getAverage(items);
+                newArray[i][j] = getAverage(items);
 
                 items.clear();
             }
         }
-        return medianArray;
+        return newArray;
     }
 
-    public int getAverage(List<Integer> items) {
+    private int getAverage(List<Integer> items) {
         int sum = 0;
         for (int i = 0; i < items.size(); i++) {
             sum += items.get(i);

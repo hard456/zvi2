@@ -3,8 +3,9 @@ package cz.jpalcut.aos;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-public class MedianFilter {
+public class ModalFilter {
 
     public int[][] processDirectFilter(int[][] array){
         int height = array.length;
@@ -27,7 +28,7 @@ public class MedianFilter {
                 if(Utils.isItemOfArray(height, width, i+1, j)){
                     items.add(array[i+1][j]);
                 }
-                newArray[i][j] = getMedian(items);
+                newArray[i][j] = getMostCommonElement(items);
                 items.clear();
             }
         }
@@ -46,26 +47,44 @@ public class MedianFilter {
 
                 for (int k = i - area / 2; k <= i + area / 2; k++){
                     for (int l = j - area / 2; l <= j + area / 2; l++){
-                        if (k != i && l != j && Utils.isItemOfArray(height, width, k, l)) {
+                        if(k == i && l == j){
+                            continue;
+                        }
+                        if (Utils.isItemOfArray(height, width, k, l)) {
                             items.add(array[k][l]);
                         }
                     }
                 }
 
-                newArray[i][j] = getMedian(items);
+                newArray[i][j] = getMostCommonElement(items);
                 items.clear();
             }
         }
         return newArray;
     }
 
-    private int getMedian(List<Integer> items){
+    private int getMostCommonElement(List<Integer> items){
         Collections.sort(items);
-        if (items.size() %2 == 0) {
-            return  (items.get((items.size()/2) - 1) + items.get(items.size()/2))/2;
-        } else {
-            return items.get(items.size()/2);
+
+        int maxCount = 1, item = items.get(0), currCount = 1;
+        for (int i = 1; i < items.size(); i++) {
+            if (Objects.equals(items.get(i), items.get(i - 1)))
+                currCount++;
+            else {
+                if (currCount > maxCount) {
+                    maxCount = currCount;
+                    item = items.get(i-1);
+                }
+                currCount = 1;
+            }
         }
+
+        if (currCount > maxCount)
+        {
+            item = items.get(items.size()-1);
+        }
+
+        return item;
     }
 
 }

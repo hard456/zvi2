@@ -1,16 +1,19 @@
 package cz.jpalcut.aos;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.apache.commons.math3.complex.Complex;
@@ -20,6 +23,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -27,7 +31,17 @@ import java.util.Random;
  */
 public class Controller {
 
-    public Button testButton;
+    public ChoiceBox choiceBox;
+    public AnchorPane averagePain;
+    public ChoiceBox averageAreaSelect;
+    public AnchorPane modalPain;
+    public ChoiceBox modalAreaSelect;
+    public AnchorPane medianPain;
+    public ChoiceBox medianAreaSelect;
+    public AnchorPane averageImagePain;
+    public Button averageImageButton;
+    public MenuItem backButton;
+
     @FXML
     Button FFTButton, IFFTButton, convolutionButton, deconvolutionButton;
 
@@ -43,14 +57,66 @@ public class Controller {
     @FXML
     Label statusText;
 
+    private BufferedImage tmp;
+
     private BufferedImage bufferedImage;
 
     private Complex[][] matrixFFT, matrixIFFT;
 
+    private BufferedImage[] images;
+
+    List<File> fileList;
+
+    @FXML
+    protected void initialize() {
+        choiceBox.setItems(FXCollections.observableArrayList("Průměrování v okolí bodu", "Modální filtrace", "Mediánová filtrace", "Průměr sledů snímků"));
+        choiceBox.getSelectionModel().select(0);
+
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener(
+                (observable, oldValue, newValue) -> drawForm(newValue.intValue())
+        );
+        averagePain.setVisible(true);
+    }
+
+    private void drawForm(int method){
+        switch (method) {
+            case 0:
+                averagePain.setVisible(true);
+                modalPain.setVisible(false);
+                medianPain.setVisible(false);
+                averageImagePain.setVisible(false);
+                break;
+            case 1:
+                modalPain.setVisible(true);
+                averagePain.setVisible(false);
+                medianPain.setVisible(false);
+                averageImagePain.setVisible(false);
+                break;
+            case 2:
+                medianPain.setVisible(true);
+                averagePain.setVisible(false);
+                modalPain.setVisible(false);
+                averageImagePain.setVisible(false);
+                break;
+            case 3:
+                averageImagePain.setVisible(true);
+                averagePain.setVisible(false);
+                modalPain.setVisible(false);
+                medianPain.setVisible(false);
+                break;
+            default:
+                averagePain.setVisible(true);
+                modalPain.setVisible(false);
+                medianPain.setVisible(false);
+                averageImagePain.setVisible(false);
+                break;
+        }
+    }
+
     /**
      * Načtení obrázku
      */
-    public void open() {
+    public void openImage() {
         File file;
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image", "*.jpg",
                 "*.jpeg", "*.bmp", "*.png");
@@ -65,24 +131,51 @@ public class Controller {
             } catch (IOException e) {
                 setStatus("Nastala chyba při načtení obrázku.", "RED");
             }
-            if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
-                bufferedImage = null;
-                imageView.setImage(null);
-                disableAllButtons();
-                openMI.setDisable(false);
-                setStatus("Výška nebo šířka obrázku nemá velikost 2^n.", "RED");
-            } else {
+//            if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
+//                bufferedImage = null;
+//                imageView.setImage(null);
+//                disableAllButtons();
+//                openMI.setDisable(false);
+//                setStatus("Výška nebo šířka obrázku nemá velikost 2^n.", "RED");
+//            } else {
                 showImage();
-                disableAllButtons();
-                FFTButton.setDisable(false);
-                saveAsMI.setDisable(false);
-                openMI.setDisable(false);
-                setStatus("Obrázek byl načten.", "GREEN");
-            }
+//                disableAllButtons();
+//                FFTButton.setDisable(false);
+//                saveAsMI.setDisable(false);
+//                openMI.setDisable(false);
+//                setStatus("Obrázek byl načten.", "GREEN");
+//            }
             matrixFFT = null;
             matrixIFFT = null;
+            backButton.setDisable(false);
         }
 
+    }
+
+    public void openImages() {
+        fileList = null;
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image", "*.jpg",
+                "*.jpeg", "*.bmp", "*.png");
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //List of files
+        fileList = fileChooser.showOpenMultipleDialog(null);
+
+        if(fileList == null){
+            return;
+        }
+        images = new BufferedImage[fileList.size()];
+
+        for (int i = 0; i < fileList.size(); i++){
+            try {
+                images[i] = ImageIO.read(fileList.get(i));
+            } catch (IOException e) {
+                setStatus("Nastala chyba při načtení obrázku.", "RED");
+            }
+        }
+        averageImageButton.setDisable(false);
     }
 
     /**
@@ -318,12 +411,109 @@ public class Controller {
     }
 
     public void testAction(){
+//        int[][] matrix = Utils.create2DArray(bufferedImage);
+//        AverageFilter averageFilter = new AverageFilter();
+//        MedianFilter medianFilter = new MedianFilter();
+//        ModalFilter modalFilter = new ModalFilter();
+//        matrix = medianFilter.processAreaFilter(matrix,9);
+//        bufferedImage = Utils.arrayToBufferedImage(bufferedImage, matrix);
+//        showImage();
+//        yolo.setVisible(false);
+    }
+
+    public int getAreaSizeFromSelect(int index){
+        switch (index) {
+            case 0:
+                return 0;
+            case 1:
+                return 3;
+            case 2:
+                return 5;
+            case 3:
+                return 7;
+            case 4:
+                return 9;
+            default:
+                return 0;
+        }
+    }
+
+    public void useAverageFilter(){
+        tmp = Utils.cloneBufferedImage(bufferedImage);
+
+        int area = getAreaSizeFromSelect(averageAreaSelect.getSelectionModel().selectedIndexProperty().getValue());
         int[][] matrix = Utils.create2DArray(bufferedImage);
         AverageFilter averageFilter = new AverageFilter();
+
+        if(area == 0){
+            matrix = averageFilter.processDirectFilter(matrix);
+        }
+        else{
+            matrix = averageFilter.processAreaFilter(matrix,area);
+        }
+
+        bufferedImage = Utils.arrayToBufferedImage(bufferedImage, matrix);
+        backButton.setDisable(false);
+        showImage();
+    }
+
+    public void useModalFilter(){
+        tmp = Utils.cloneBufferedImage(bufferedImage);
+
+        int area = getAreaSizeFromSelect(modalAreaSelect.getSelectionModel().selectedIndexProperty().getValue());
+        int[][] matrix = Utils.create2DArray(bufferedImage);
+        ModalFilter modalFilter = new ModalFilter();
+
+        if(area == 0){
+            matrix = modalFilter.processDirectFilter(matrix);
+        }
+        else{
+            matrix = modalFilter.processAreaFilter(matrix,area);
+        }
+
+        bufferedImage = Utils.arrayToBufferedImage(bufferedImage, matrix);
+        backButton.setDisable(false);
+        showImage();
+    }
+
+    public void useMedianFilter(){
+        tmp = Utils.cloneBufferedImage(bufferedImage);
+
+        int area = getAreaSizeFromSelect(medianAreaSelect.getSelectionModel().selectedIndexProperty().getValue());
+        int[][] matrix = Utils.create2DArray(bufferedImage);
         MedianFilter medianFilter = new MedianFilter();
-        ModelFilter modelFilter = new ModelFilter();
-        matrix = medianFilter.processIndirectFilter(matrix);
-        Utils.arrayToBufferedImage(bufferedImage, matrix);
+
+        if(area == 0){
+            matrix = medianFilter.processDirectFilter(matrix);
+        }
+        else{
+            matrix = medianFilter.processAreaFilter(matrix,area);
+        }
+
+        bufferedImage = Utils.arrayToBufferedImage(bufferedImage, matrix);
+        backButton.setDisable(false);
+        showImage();
+    }
+
+    public void useAverageImagesFilter(){
+        if(images == null || images.length < 2){
+            setStatus("Počet obrázků musí být více než jedna.", "RED");
+        }
+        else if (!Utils.haveImagesSameSize(images)){
+            setStatus("Obrázky mají rozdílnou velikost.", "RED");
+        }
+        else{
+            AverageImagesFilter filter = new AverageImagesFilter();
+            bufferedImage = images[0];
+            Utils.arrayToBufferedImage(bufferedImage,filter.processFilter(Utils.create3DArray(images)));
+        }
+        showImage();
+        averageImageButton.setDisable(true);
+    }
+
+    public void actionBack(){
+        bufferedImage = tmp;
+        backButton.setDisable(true);
         showImage();
     }
 
