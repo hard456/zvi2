@@ -120,6 +120,40 @@
                                     text="Provést"/>
                         </AnchorPane>
 
+                        <!-- MAX FILTER -->
+                        <AnchorPane fx:id="maxPain" visible="false" layoutY="105.0">
+                            <ChoiceBox fx:id="maxAreaSelect" focusTraversable="false" layoutX="10.0" prefWidth="180" value="4-okolí">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="4-okolí" />
+                                        <String fx:value="8-okolí" />
+                                        <String fx:value="5x5 oblast" />
+                                        <String fx:value="7x7 oblast" />
+                                        <String fx:value="9x9 oblast" />
+                                    </FXCollections>
+                                </items>
+                            </ChoiceBox>
+                            <Button layoutX="10.0" layoutY="35" mnemonicParsing="false" onAction="#useMaxFilter"
+                                    prefWidth="180" text="Provést" userData="true"/>
+                        </AnchorPane>
+
+                        <!-- MIN FILTER -->
+                        <AnchorPane fx:id="minPain" visible="false" layoutY="105.0">
+                            <ChoiceBox fx:id="minAreaSelect" focusTraversable="false" layoutX="10.0" prefWidth="180" value="4-okolí">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="4-okolí" />
+                                        <String fx:value="8-okolí" />
+                                        <String fx:value="5x5 oblast" />
+                                        <String fx:value="7x7 oblast" />
+                                        <String fx:value="9x9 oblast" />
+                                    </FXCollections>
+                                </items>
+                            </ChoiceBox>
+                            <Button layoutX="10.0" layoutY="35" mnemonicParsing="false" onAction="#useMinFilter"
+                                    prefWidth="180" text="Provést" userData="true"/>
+                        </AnchorPane>
+
                     </children>
                 </AnchorPane>
             </left>

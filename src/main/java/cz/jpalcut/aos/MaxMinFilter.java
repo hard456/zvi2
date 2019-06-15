@@ -3,9 +3,14 @@ package cz.jpalcut.aos;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
-public class ModalFilter {
+public class MaxMinFilter {
+
+    private boolean max;
+
+    public MaxMinFilter(boolean max) {
+        this.max = max;
+    }
 
     public int[][] processDirectFilter(int[][] array){
         int height = array.length;
@@ -28,7 +33,14 @@ public class ModalFilter {
                 if(Utils.isItemOfArray(height, width, i+1, j)){
                     items.add(array[i+1][j]);
                 }
-                newArray[i][j] = getMostCommonElement(items);
+
+                if(max){
+                    newArray[i][j] = Collections.max(items);
+                }
+                else{
+                    newArray[i][j] = Collections.min(items);
+                }
+
                 items.clear();
             }
         }
@@ -53,35 +65,18 @@ public class ModalFilter {
                     }
                 }
 
-                newArray[i][j] = getMostCommonElement(items);
+                if(max){
+                    newArray[i][j] = Collections.max(items);
+                }
+                else{
+                    newArray[i][j] = Collections.min(items);
+                }
+
                 items.clear();
             }
         }
         return newArray;
     }
 
-    private int getMostCommonElement(List<Integer> items){
-        Collections.sort(items);
-
-        int maxCount = 1, item = items.get(0), currCount = 1;
-        for (int i = 1; i < items.size(); i++) {
-            if (Objects.equals(items.get(i), items.get(i - 1)))
-                currCount++;
-            else {
-                if (currCount > maxCount) {
-                    maxCount = currCount;
-                    item = items.get(i-1);
-                }
-                currCount = 1;
-            }
-        }
-
-        if (currCount > maxCount)
-        {
-            item = items.get(items.size()-1);
-        }
-
-        return item;
-    }
 
 }

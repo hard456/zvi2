@@ -41,6 +41,11 @@ public class Controller {
     public AnchorPane averageImagePain;
     public Button averageImageButton;
     public MenuItem backButton;
+    public AnchorPane maxPain;
+    public Button maxMinButton;
+    public AnchorPane minPain;
+    public ChoiceBox minAreaSelect;
+    public ChoiceBox maxAreaSelect;
 
     @FXML
     Button FFTButton, IFFTButton, convolutionButton, deconvolutionButton;
@@ -69,7 +74,7 @@ public class Controller {
 
     @FXML
     protected void initialize() {
-        choiceBox.setItems(FXCollections.observableArrayList("Průměrování v okolí bodu", "Modální filtrace", "Mediánová filtrace", "Průměr sledů snímků"));
+        choiceBox.setItems(FXCollections.observableArrayList("Průměrování v okolí bodu", "Modální filtrace", "Mediánová filtrace", "Průměr sledů snímků", "Filtrace maximem", "Filtrace minimem"));
         choiceBox.getSelectionModel().select(0);
 
         choiceBox.getSelectionModel().selectedIndexProperty().addListener(
@@ -85,30 +90,54 @@ public class Controller {
                 modalPain.setVisible(false);
                 medianPain.setVisible(false);
                 averageImagePain.setVisible(false);
+                maxPain.setVisible(false);
+                minPain.setVisible(false);
                 break;
             case 1:
                 modalPain.setVisible(true);
                 averagePain.setVisible(false);
                 medianPain.setVisible(false);
                 averageImagePain.setVisible(false);
+                maxPain.setVisible(false);
+                minPain.setVisible(false);
                 break;
             case 2:
                 medianPain.setVisible(true);
                 averagePain.setVisible(false);
                 modalPain.setVisible(false);
                 averageImagePain.setVisible(false);
+                maxPain.setVisible(false);
+                minPain.setVisible(false);
                 break;
             case 3:
                 averageImagePain.setVisible(true);
                 averagePain.setVisible(false);
                 modalPain.setVisible(false);
                 medianPain.setVisible(false);
+                maxPain.setVisible(false);
+                minPain.setVisible(false);
                 break;
+            case 4:
+                maxPain.setVisible(true);
+                averagePain.setVisible(false);
+                modalPain.setVisible(false);
+                medianPain.setVisible(false);
+                averageImagePain.setVisible(false);
+                minPain.setVisible(false);
+            case 5:
+                minPain.setVisible(true);
+                averagePain.setVisible(false);
+                modalPain.setVisible(false);
+                medianPain.setVisible(false);
+                averageImagePain.setVisible(false);
+                maxPain.setVisible(false);
             default:
                 averagePain.setVisible(true);
                 modalPain.setVisible(false);
                 medianPain.setVisible(false);
                 averageImagePain.setVisible(false);
+                maxPain.setVisible(false);
+                minPain.setVisible(false);
                 break;
         }
     }
@@ -514,6 +543,44 @@ public class Controller {
     public void actionBack(){
         bufferedImage = tmp;
         backButton.setDisable(true);
+        showImage();
+    }
+
+    public void useMaxFilter(){
+        tmp = Utils.cloneBufferedImage(bufferedImage);
+
+        int area = getAreaSizeFromSelect(maxAreaSelect.getSelectionModel().selectedIndexProperty().getValue());
+        int[][] matrix = Utils.create2DArray(bufferedImage);
+        MaxMinFilter maxMinFilter = new MaxMinFilter(true);
+
+        if(area == 0){
+            matrix = maxMinFilter.processDirectFilter(matrix);
+        }
+        else{
+            matrix = maxMinFilter.processAreaFilter(matrix,area);
+        }
+
+        bufferedImage = Utils.arrayToBufferedImage(bufferedImage, matrix);
+        backButton.setDisable(false);
+        showImage();
+    }
+
+    public void useMinFilter(){
+        tmp = Utils.cloneBufferedImage(bufferedImage);
+
+        int area = getAreaSizeFromSelect(minAreaSelect.getSelectionModel().selectedIndexProperty().getValue());
+        int[][] matrix = Utils.create2DArray(bufferedImage);
+        MaxMinFilter maxMinFilter = new MaxMinFilter(false);
+
+        if(area == 0){
+            matrix = maxMinFilter.processDirectFilter(matrix);
+        }
+        else{
+            matrix = maxMinFilter.processAreaFilter(matrix,area);
+        }
+
+        bufferedImage = Utils.arrayToBufferedImage(bufferedImage, matrix);
+        backButton.setDisable(false);
         showImage();
     }
 
