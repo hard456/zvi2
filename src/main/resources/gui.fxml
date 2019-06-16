@@ -29,7 +29,7 @@
                             <items>
                                 <MenuItem fx:id="openMI" mnemonicParsing="false" onAction="#openImage" text="Open"/>
                                 <MenuItem fx:id="saveAsMI" disable="true" mnemonicParsing="false"
-                                          text="Save"/>
+                                          text="Save" onAction="#saveAs"/>
                                 <MenuItem fx:id="backButton" mnemonicParsing="false" text="Zpět" disable="true" onAction="#actionBack"/>
                             </items>
                         </Menu>
@@ -134,7 +134,7 @@
                                 </items>
                             </ChoiceBox>
                             <Button layoutX="10.0" layoutY="35" mnemonicParsing="false" onAction="#useMaxFilter"
-                                    prefWidth="180" text="Provést" userData="true"/>
+                                    prefWidth="180" text="Provést"/>
                         </AnchorPane>
 
                         <!-- MIN FILTER -->
@@ -151,7 +151,64 @@
                                 </items>
                             </ChoiceBox>
                             <Button layoutX="10.0" layoutY="35" mnemonicParsing="false" onAction="#useMinFilter"
-                                    prefWidth="180" text="Provést" userData="true"/>
+                                    prefWidth="180" text="Provést"/>
+                        </AnchorPane>
+
+                        <!-- FFT -->
+                        <AnchorPane fx:id="fftPain" visible="false" layoutY="105.0">
+                            <Button fx:id="fftButton" layoutX="10.0" mnemonicParsing="false" onAction="#useFFT"
+                                    prefWidth="180" text="Provést"/>
+                        </AnchorPane>
+
+                        <!-- IFFT -->
+                        <AnchorPane fx:id="ifftPain" visible="false" layoutY="105.0">
+                            <Button fx:id="ifftButton" disable="true" layoutX="10.0" mnemonicParsing="false" onAction="#useInverseFFT"
+                                    prefWidth="180" text="Provést"/>
+                        </AnchorPane>
+
+                        <!-- Inverzní filter -->
+                        <AnchorPane fx:id="inverseFilterPain" visible="false" layoutY="105.0">
+                            <Label layoutX="10">Maska:</Label>
+                            <TextField layoutX="10" layoutY="20.0" prefWidth="180.0" focusTraversable="false"
+                                       fx:id="deconvolutionMask" text="1 1 1;1 1 1;1 1 1;"/>
+                            <Label layoutX="10" layoutY="50.0">Práh:</Label>
+                            <TextField layoutX="10" layoutY="70.0" prefWidth="180.0" focusTraversable="false"
+                                       fx:id="thresholdField" text="0.001"/>
+                            <Button layoutX="10.0" layoutY="100.0" mnemonicParsing="false" onAction="#useInverseFilter"
+                                    prefWidth="180" text="Provést"/>
+                        </AnchorPane>
+
+                        <!-- SŮL A PEPŘ -->
+                        <AnchorPane fx:id="conservativePain" visible="false" layoutY="105.0">
+                            <ChoiceBox fx:id="conservativeSelect" focusTraversable="false" layoutX="10.0" prefWidth="180" value="4-okolí">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="4-okolí" />
+                                        <String fx:value="8-okolí" />
+                                        <String fx:value="5x5 oblast" />
+                                        <String fx:value="7x7 oblast" />
+                                        <String fx:value="9x9 oblast" />
+                                    </FXCollections>
+                                </items>
+                            </ChoiceBox>
+                            <Button layoutX="10.0" layoutY="35" mnemonicParsing="false" onAction="#useConservativeFilter"
+                                    prefWidth="180" text="Provést"/>
+                        </AnchorPane>
+
+                        <!-- ROTATION MASK -->
+                        <AnchorPane fx:id="rotationMaskPain" visible="false" layoutY="105.0">
+                            <ChoiceBox fx:id="rotationMaskSelect" focusTraversable="false" layoutX="10.0" prefWidth="180" value="3x3 oblast">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="3x3 oblast" />
+                                        <String fx:value="5x5 oblast" />
+                                        <String fx:value="7x7 oblast" />
+                                        <String fx:value="9x9 oblast" />
+                                    </FXCollections>
+                                </items>
+                            </ChoiceBox>
+                            <Button layoutX="10.0" layoutY="35" mnemonicParsing="false" onAction="#useRotationMaskFilter"
+                                    prefWidth="180" text="Provést"/>
                         </AnchorPane>
 
                     </children>

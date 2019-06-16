@@ -231,9 +231,9 @@ public class Utils {
     public static BufferedImage arrayToBufferedImage(BufferedImage image, int[][] array){
         for (int i = 0; i < array.length; i++){
             for (int j = 0; j < array[0].length; j++){
-                if(array[i][j] > 256 || array[i][j] < 0){
-                    System.out.println(array[i][j]);
-                }
+//                if(array[i][j] > 256 || array[i][j] < 0){
+//                    System.out.println(array[i][j]);
+//                }
                 image.setRGB(j, i, Utils.convertGrayLevelToRGB(array[i][j]));
             }
         }
@@ -250,10 +250,21 @@ public class Utils {
     }
 
     public static BufferedImage cloneBufferedImage(BufferedImage bi){
+            if(bi == null){
+                return null;
+            }
             ColorModel cm = bi.getColorModel();
             boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
             WritableRaster raster = bi.copyData(null);
             return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
+
+    public static double getAverage(List<Integer> items){
+        double sum = 0;
+        for (Integer item : items) {
+            sum += item;
+        }
+        return sum/items.size();
     }
 
 }
