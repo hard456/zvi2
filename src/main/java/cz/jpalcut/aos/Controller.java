@@ -51,9 +51,9 @@ public class Controller {
     @FXML
     Label statusText;
 
-    private BufferedImage tmp;
+    int width, height;
 
-    private BufferedImage bufferedImage;
+    private BufferedImage tmp, bufferedImage;
 
     private Complex[][] matrixFFT, matrixIFFT;
 
@@ -62,7 +62,8 @@ public class Controller {
     @FXML
     protected void initialize() {
         choiceBox.setItems(FXCollections.observableArrayList("Průměrování v okolí bodu", "Modální filtrace", "Mediánová filtrace",
-                "Průměr sledů snímků", "Filtrace maximem", "Filtrace minimem", "FFT obrázku", "IFFT obrázku", "Inverzní filter", "Konzervativní filtr - pepř a sůl", "Filtrace rotováním masky"));
+                "Průměr sledů snímků", "Filtrace maximem", "Filtrace minimem", "FFT obrázku", "IFFT obrázku", "Inverzní filter",
+                "Konzervativní filtr - pepř a sůl", "Filtrace rotováním masky"));
         choiceBox.getSelectionModel().select(0);
 
         choiceBox.getSelectionModel().selectedIndexProperty().addListener(
@@ -265,6 +266,8 @@ public class Controller {
             showImage();
             setStatus("Obrázek byl načten.", "GREEN");
             backButton.setDisable(false);
+            this.height = bufferedImage.getHeight();
+            this.width = bufferedImage.getWidth();
         }
 
     }
@@ -330,11 +333,6 @@ public class Controller {
             return;
         }
 
-        if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
-            setStatus("Výška nebo šířka obrázku nemá velikost 2^n.", "RED");
-            return;
-        }
-
         ifftButton.setDisable(true);
         openMI.setDisable(true);
         saveAsMI.setDisable(true);
@@ -350,6 +348,11 @@ public class Controller {
                 matrix = fft.compute(matrix);
                 matrixIFFT = matrix.clone();
                 bufferedImage = fft.createIFFTImage(bufferedImage, matrix);
+
+                if(matrix.length != height || matrix[0].length != width){
+                    bufferedImage = Utils.restrictBufferedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), bufferedImage);
+                }
+
                 showImage();
                 return null;
             }
@@ -375,11 +378,6 @@ public class Controller {
             return;
         }
 
-        if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
-            setStatus("Výška nebo šířka obrázku nemá velikost 2^n.", "RED");
-            return;
-        }
-
         fftButton.setDisable(true);
         openMI.setDisable(true);
         saveAsMI.setDisable(true);
@@ -396,10 +394,19 @@ public class Controller {
                     matrix = matrixIFFT.clone();
                     matrix = Utils.divideMatrix(matrix);
                 } else {
+
                     matrix = Utils.create2DComplexArray(bufferedImage);
+
+                    if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
+                        matrix = Utils.fillingMatrixToPowTwo(matrix);
+                    }
+
+
                 }
 
                 matrix = fft.compute(matrix);
+                bufferedImage = new BufferedImage(matrix[0].length, matrix.length, BufferedImage.TYPE_INT_RGB);
+
                 matrixFFT = matrix.clone();
                 fft.createFFTImage(bufferedImage, matrix);
                 bufferedImage = fft.centerFFTImage(bufferedImage);
@@ -428,11 +435,6 @@ public class Controller {
             return;
         }
 
-        if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
-            setStatus("Výška nebo šířka obrázku nemá velikost 2^n.", "RED");
-            return;
-        }
-
         disableDefaultUI();
         inverseFilterButton.setDisable(true);
         tmp = Utils.cloneBufferedImage(bufferedImage);
@@ -455,10 +457,16 @@ public class Controller {
             @Override
             public Void call() {
                 Complex[][] mask, image;
-                mask = Utils.arrayToComplexArray(filter, bufferedImage.getWidth(), bufferedImage.getHeight());
                 FFT fft = new FFT(false);
 
                 image = Utils.create2DComplexArray(bufferedImage);
+
+                if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
+                    image = Utils.fillingMatrixToPowTwo(image);
+                }
+
+                mask = Utils.arrayToComplexArray(filter, image[0].length, image.length);
+
                 image = fft.compute(image);
 
                 mask = fft.compute(mask);
@@ -466,7 +474,12 @@ public class Controller {
 
                 FFT ifft = new FFT(true);
                 mask = ifft.compute(mask);
+                bufferedImage = new BufferedImage(mask[0].length, mask.length, BufferedImage.TYPE_INT_RGB);
                 ifft.createIFFTImage(bufferedImage, mask);
+
+                if(mask.length != height || mask[0].length != width){
+                    bufferedImage = Utils.restrictBufferedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), bufferedImage);
+                }
 
                 showImage();
                 return null;
@@ -522,7 +535,7 @@ public class Controller {
         }
     }
 
-    private int getAreaSizeFromSelectWithouDirect(int index) {
+    private int getAreaSizeFromSelectWithoutDirect(int index) {
         switch (index) {
             case 0:
                 return 3;
@@ -683,14 +696,19 @@ public class Controller {
                 setStatus("Byl proveden průmer sledu snímků.", "GREEN");
                 enableDefaultUI();
                 averageChooseImageButton.setDisable(false);
+                height = bufferedImage.getHeight();
+                width = bufferedImage.getWidth();
             });
             setStatus("Provádí se průměr sledu snímků.", "BLUE");
             new Thread(task).start();
         }
+
     }
 
     public void actionBack() {
         bufferedImage = tmp;
+        this.height = tmp.getHeight();
+        this.width = tmp.getWidth();
         backButton.setDisable(true);
         setStatus("Byla provedena akce zpět.", "GREEN");
         showImage();
@@ -834,7 +852,7 @@ public class Controller {
         Task task = new Task<Void>() {
             @Override
             public Void call() {
-                int area = getAreaSizeFromSelectWithouDirect(rotationMaskSelect.getSelectionModel().selectedIndexProperty().getValue());
+                int area = getAreaSizeFromSelectWithoutDirect(rotationMaskSelect.getSelectionModel().selectedIndexProperty().getValue());
                 int[][] matrix = Utils.create2DArray(bufferedImage);
                 RotationMaskFilter rotationMaskFilter = new RotationMaskFilter();
 

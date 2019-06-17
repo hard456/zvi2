@@ -47,6 +47,7 @@
                 <AnchorPane prefHeight="768" prefWidth="200.0" style="-fx-background-color: #D3D3D3"
                             BorderPane.alignment="CENTER">
                     <children>
+
                         <!-- VÝBĚR AKCE-->
                         <Label layoutX="5" layoutY="5">Výběr akce</Label>
                         <Separator layoutY="25" prefHeight="3.0" prefWidth="200.0"

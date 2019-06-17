@@ -2,6 +2,7 @@ package cz.jpalcut.aos;
 
 import org.apache.commons.math3.complex.Complex;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -265,6 +266,55 @@ public class Utils {
             sum += item;
         }
         return sum/items.size();
+    }
+
+    public static Complex[][] fillingMatrixToPowTwo(Complex[][] complexes){
+        int height = complexes.length;
+        int width = complexes[0].length;
+
+        if(!isNumberPowerOfTwo(height)){
+            height = getNextPowOfTwoNumber(height);
+        }
+
+        if(!isNumberPowerOfTwo(width)){
+            width = getNextPowOfTwoNumber(width);
+        }
+
+        Complex[][] newArray = new Complex[height][width];
+
+        for (int i = 0; i < height; i++){
+            for (int j = 0; j < width; j++){
+                if(j >= complexes[0].length || i >= complexes.length){
+                    newArray[i][j] = new Complex(0.0,0.0);
+                }
+                else{
+                    newArray[i][j] = complexes[i][j];
+                }
+            }
+        }
+        return newArray;
+    }
+
+    public static int getNextPowOfTwoNumber(int value){
+        int start = 1;
+        int number;
+        while(true){
+            number = (int)Math.pow(2,start);
+            if(number > value){
+                return number;
+            }
+            start++;
+        }
+    }
+
+    public static BufferedImage restrictBufferedImage(BufferedImage first, BufferedImage second){
+
+        for (int i = 0; i < first.getHeight(); i++){
+            for (int j = 0; j < first.getWidth(); j++){
+                first.setRGB(j, i, second.getRGB(j, i));
+            }
+        }
+        return first;
     }
 
 }
