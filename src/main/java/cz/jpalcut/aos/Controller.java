@@ -3,7 +3,6 @@ package cz.jpalcut.aos;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.*;
@@ -14,7 +13,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.apache.commons.math3.complex.Complex;
-
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,51 +26,30 @@ import java.util.Random;
  */
 public class Controller {
 
-    public ChoiceBox choiceBox;
-    public AnchorPane averagePain;
-    public ChoiceBox averageAreaSelect;
-    public AnchorPane modalPain;
-    public ChoiceBox modalAreaSelect;
-    public AnchorPane medianPain;
-    public ChoiceBox medianAreaSelect;
-    public AnchorPane averageImagePain;
-    public Button averageImageButton;
-    public MenuItem backButton;
-    public AnchorPane maxPain;
-    public AnchorPane minPain;
-    public ChoiceBox minAreaSelect;
-    public ChoiceBox maxAreaSelect;
-    public AnchorPane fftPain;
-    public AnchorPane ifftPain;
-    public AnchorPane inverseFilterPain;
-    public Button ifftButton;
-    public Button fftButton;
-    public AnchorPane conservativePain;
-    public ChoiceBox conservativeSelect;
-    public AnchorPane rotationMaskPain;
-    public ChoiceBox rotationMaskSelect;
-    public Button averageButton;
-    public Button modalButton;
-    public Button medianButton;
-    public Button averageChooseImageButton;
-    public Button maxFilterButton;
-    public Button minFilterButton;
-    public Button inverseFilterButton;
-    public Button conservativeButton;
-    public Button rotationMaskButton;
+    @FXML
+    public ChoiceBox choiceBox, averageAreaSelect, modalAreaSelect, medianAreaSelect, minAreaSelect, maxAreaSelect,
+            conservativeSelect, rotationMaskSelect;
+
+    @FXML
+    public AnchorPane averagePain, modalPain, medianPain, averageImagePain, maxPain, minPain, fftPain, ifftPain,
+            inverseFilterPain, conservativePain, rotationMaskPain;
+
+    @FXML
+    public Button averageImageButton, ifftButton, fftButton, averageButton, modalButton, medianButton,
+            averageChooseImageButton, maxFilterButton, minFilterButton, inverseFilterButton,
+            conservativeButton, rotationMaskButton;
 
     @FXML
     TextField deconvolutionMask, thresholdField;
 
     @FXML
-    MenuItem openMI, saveAsMI;
+    MenuItem openMI, saveAsMI, backButton;
 
     @FXML
     ImageView imageView;
 
     @FXML
     Label statusText;
-
 
     private BufferedImage tmp;
 
@@ -81,8 +58,6 @@ public class Controller {
     private Complex[][] matrixFFT, matrixIFFT;
 
     private BufferedImage[] images;
-
-    private List<File> fileList;
 
     @FXML
     protected void initialize() {
@@ -98,10 +73,9 @@ public class Controller {
 
     private void drawForm(int method) {
 
-        if(matrixFFT == null){
+        if (matrixFFT == null) {
             ifftButton.setDisable(true);
-        }
-        else{
+        } else {
             ifftButton.setDisable(false);
         }
 
@@ -296,7 +270,7 @@ public class Controller {
     }
 
     public void openImages() {
-        fileList = null;
+        List<File> fileList = null;
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image", "*.jpg",
                 "*.jpeg", "*.bmp", "*.png");
 
@@ -351,7 +325,7 @@ public class Controller {
      */
     public void useInverseFFT() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -396,7 +370,7 @@ public class Controller {
      */
     public void useFFT() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -449,7 +423,7 @@ public class Controller {
      */
     public void useInverseFilter() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -531,17 +505,6 @@ public class Controller {
         statusText.setTextFill(Color.web(color));
     }
 
-    public void testAction() {
-//        int[][] matrix = Utils.create2DArray(bufferedImage);
-//        AverageFilter averageFilter = new AverageFilter();
-//        MedianFilter medianFilter = new MedianFilter();
-//        ModalFilter modalFilter = new ModalFilter();
-//        matrix = medianFilter.processAreaFilter(matrix,9);
-//        bufferedImage = Utils.arrayToBufferedImage(bufferedImage, matrix);
-//        showImage();
-//        yolo.setVisible(false);
-    }
-
     private int getAreaSizeFromSelect(int index) {
         switch (index) {
             case 0:
@@ -576,7 +539,7 @@ public class Controller {
 
     public void useAverageFilter() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -616,7 +579,7 @@ public class Controller {
 
     public void useModalFilter() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -655,7 +618,7 @@ public class Controller {
 
     public void useMedianFilter() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -727,20 +690,6 @@ public class Controller {
     }
 
     public void actionBack() {
-//        if(matrixIFFT != null && matrixFFT != null){
-//            fftButton.setDisable(false);
-//            matrixIFFT = null;
-//            ifftButton.setDisable(true);
-//        }
-//        else if(matrixIFFT != null){
-//            matrixIFFT = null;
-//            ifftButton.setDisable(false);
-//            fftButton.setDisable(true);
-//        }
-//        else if(matrixFFT != null){
-//            matrixFFT = null;
-//            fftButton.setDisable(false);
-//        }
         bufferedImage = tmp;
         backButton.setDisable(true);
         setStatus("Byla provedena akce zpět.", "GREEN");
@@ -749,7 +698,7 @@ public class Controller {
 
     public void useMaxFilter() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -788,7 +737,7 @@ public class Controller {
 
     public void useMinFilter() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -826,7 +775,7 @@ public class Controller {
         new Thread(task).start();
     }
 
-    private void clearFFTMatrix(){
+    private void clearFFTMatrix() {
         fftButton.setDisable(false);
         matrixFFT = null;
         matrixIFFT = null;
@@ -834,7 +783,7 @@ public class Controller {
 
     public void useConservativeFilter() {
 
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
@@ -872,11 +821,10 @@ public class Controller {
     }
 
     public void useRotationMaskFilter() {
-        if(bufferedImage == null){
+        if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
-
 
         disableDefaultUI();
         rotationMaskButton.setDisable(true);
@@ -906,14 +854,14 @@ public class Controller {
         new Thread(task).start();
     }
 
-    public void disableDefaultUI(){
+    private void disableDefaultUI() {
         choiceBox.setDisable(true);
         openMI.setDisable(true);
         backButton.setDisable(true);
         saveAsMI.setDisable(true);
     }
 
-    public void enableDefaultUI(){
+    private void enableDefaultUI() {
         choiceBox.setDisable(false);
         openMI.setDisable(false);
         backButton.setDisable(false);
