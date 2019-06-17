@@ -51,6 +51,15 @@ public class Controller {
     public ChoiceBox conservativeSelect;
     public AnchorPane rotationMaskPain;
     public ChoiceBox rotationMaskSelect;
+    public Button averageButton;
+    public Button modalButton;
+    public Button medianButton;
+    public Button averageChooseImageButton;
+    public Button maxFilterButton;
+    public Button minFilterButton;
+    public Button inverseFilterButton;
+    public Button conservativeButton;
+    public Button rotationMaskButton;
 
     @FXML
     TextField deconvolutionMask, thresholdField;
@@ -352,11 +361,11 @@ public class Controller {
             return;
         }
 
-        tmp = Utils.cloneBufferedImage(bufferedImage);
-
-        if (matrixFFT == null) {
-            setStatus("Inverzní FFT lze provést jen po použití FFT.", "RED");
-        }
+        ifftButton.setDisable(true);
+        openMI.setDisable(true);
+        saveAsMI.setDisable(true);
+        backButton.setDisable(true);
+        choiceBox.setDisable(true);
 
         Task task = new Task<Void>() {
             @Override
@@ -373,9 +382,10 @@ public class Controller {
         };
         task.setOnSucceeded(event -> {
             setStatus("Byla provedena IFFT.", "GREEN");
-            backButton.setDisable(false);
-            ifftButton.setDisable(true);
             fftButton.setDisable(false);
+            openMI.setDisable(false);
+            saveAsMI.setDisable(false);
+            choiceBox.setDisable(false);
         });
         setStatus("Provádí se IFFT.", "BLUE");
         new Thread(task).start();
@@ -396,7 +406,11 @@ public class Controller {
             return;
         }
 
-        tmp = Utils.cloneBufferedImage(bufferedImage);
+        fftButton.setDisable(true);
+        openMI.setDisable(true);
+        saveAsMI.setDisable(true);
+        backButton.setDisable(true);
+        choiceBox.setDisable(true);
 
         Task task = new Task<Void>() {
             @Override
@@ -421,9 +435,10 @@ public class Controller {
         };
         task.setOnSucceeded(event -> {
             setStatus("Byla provedena FFT.", "GREEN");
-            backButton.setDisable(false);
-            fftButton.setDisable(true);
             ifftButton.setDisable(false);
+            openMI.setDisable(false);
+            saveAsMI.setDisable(false);
+            choiceBox.setDisable(false);
         });
         setStatus("Provádí se FFT.", "BLUE");
         new Thread(task).start();
@@ -444,6 +459,8 @@ public class Controller {
             return;
         }
 
+        disableDefaultUI();
+        inverseFilterButton.setDisable(true);
         tmp = Utils.cloneBufferedImage(bufferedImage);
         clearFFTMatrix();
 
@@ -483,7 +500,8 @@ public class Controller {
         };
         task.setOnSucceeded(event -> {
             setStatus("Byl aplikován inverzní filter.", "GREEN");
-            backButton.setDisable(false);
+            enableDefaultUI();
+            inverseFilterButton.setDisable(false);
         });
         setStatus("Provádí se inverzní filter.", "BLUE");
         new Thread(task).start();
@@ -563,6 +581,8 @@ public class Controller {
             return;
         }
 
+        averageButton.setDisable(true);
+        disableDefaultUI();
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
 
@@ -587,7 +607,8 @@ public class Controller {
             backButton.setDisable(false);
             showImage();
             setStatus("Bylo provedeno průměrování v okolí bodu.", "GREEN");
-            backButton.setDisable(false);
+            enableDefaultUI();
+            averageButton.setDisable(false);
         });
         setStatus("Provádí se průměrování v okolí bodu.", "BLUE");
         new Thread(task).start();
@@ -600,6 +621,8 @@ public class Controller {
             return;
         }
 
+        modalButton.setDisable(true);
+        disableDefaultUI();
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
 
@@ -623,7 +646,8 @@ public class Controller {
         task.setOnSucceeded(event -> {
             showImage();
             setStatus("Byl proveden modální filter.", "GREEN");
-            backButton.setDisable(false);
+            modalButton.setDisable(false);
+            enableDefaultUI();
         });
         setStatus("Provádí se modální filter.", "BLUE");
         new Thread(task).start();
@@ -636,6 +660,8 @@ public class Controller {
             return;
         }
 
+        medianButton.setDisable(true);
+        disableDefaultUI();
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
 
@@ -659,7 +685,8 @@ public class Controller {
         task.setOnSucceeded(event -> {
             showImage();
             setStatus("Byla provedena mediánová filtrace.", "GREEN");
-            backButton.setDisable(false);
+            enableDefaultUI();
+            medianButton.setDisable(false);
         });
         setStatus("Provádí se mediánová filtrace.", "BLUE");
         new Thread(task).start();
@@ -675,6 +702,10 @@ public class Controller {
             setStatus("Obrázky mají rozdílnou velikost.", "RED");
         } else {
 
+            averageImageButton.setDisable(true);
+            averageChooseImageButton.setDisable(true);
+            disableDefaultUI();
+
             Task task = new Task<Void>() {
                 @Override
                 public Void call() {
@@ -687,8 +718,8 @@ public class Controller {
             task.setOnSucceeded(event -> {
                 showImage();
                 setStatus("Byl proveden průmer sledu snímků.", "GREEN");
-                backButton.setDisable(false);
-                averageImageButton.setDisable(true);
+                enableDefaultUI();
+                averageChooseImageButton.setDisable(false);
             });
             setStatus("Provádí se průměr sledu snímků.", "BLUE");
             new Thread(task).start();
@@ -723,6 +754,8 @@ public class Controller {
             return;
         }
 
+        disableDefaultUI();
+        maxFilterButton.setDisable(true);
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
 
@@ -746,7 +779,8 @@ public class Controller {
         task.setOnSucceeded(event -> {
             showImage();
             setStatus("Byla provedena filtrace maximem.", "GREEN");
-            backButton.setDisable(false);
+            enableDefaultUI();
+            maxFilterButton.setDisable(false);
         });
         setStatus("Provádí se filtrace maximem.", "BLUE");
         new Thread(task).start();
@@ -758,6 +792,9 @@ public class Controller {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
         }
+
+        minFilterButton.setDisable(true);
+        disableDefaultUI();
 
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
@@ -782,7 +819,8 @@ public class Controller {
         task.setOnSucceeded(event -> {
             showImage();
             setStatus("Byla provedena filtrace minimem.", "GREEN");
-            backButton.setDisable(false);
+            enableDefaultUI();
+            minFilterButton.setDisable(false);
         });
         setStatus("Provádí se filtrace minimem.", "BLUE");
         new Thread(task).start();
@@ -801,6 +839,8 @@ public class Controller {
             return;
         }
 
+        disableDefaultUI();
+        conservativeButton.setDisable(true);
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
 
@@ -824,7 +864,8 @@ public class Controller {
         task.setOnSucceeded(event -> {
             showImage();
             setStatus("Byla provedena konzervativní filtrace - pepř a sůl.", "GREEN");
-            backButton.setDisable(false);
+            enableDefaultUI();
+            conservativeButton.setDisable(false);
         });
         setStatus("Provádí se konzervativní filtrace - pepř a sůl.", "BLUE");
         new Thread(task).start();
@@ -836,6 +877,9 @@ public class Controller {
             return;
         }
 
+
+        disableDefaultUI();
+        rotationMaskButton.setDisable(true);
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
 
@@ -855,9 +899,25 @@ public class Controller {
         task.setOnSucceeded(event -> {
             showImage();
             setStatus("Byla provedena filtrace rotováním masky.", "GREEN");
-            backButton.setDisable(false);
+            enableDefaultUI();
+            rotationMaskButton.setDisable(false);
         });
         setStatus("Provádí se filtrace rotováním masky.", "BLUE");
         new Thread(task).start();
     }
+
+    public void disableDefaultUI(){
+        choiceBox.setDisable(true);
+        openMI.setDisable(true);
+        backButton.setDisable(true);
+        saveAsMI.setDisable(true);
+    }
+
+    public void enableDefaultUI(){
+        choiceBox.setDisable(false);
+        openMI.setDisable(false);
+        backButton.setDisable(false);
+        saveAsMI.setDisable(false);
+    }
+
 }
