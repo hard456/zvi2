@@ -13,6 +13,7 @@ public class FFT {
 
     /**
      * Konstruktor třídy
+     *
      * @param inverse true - pro nastavení IFFT, false - nastavení výpočtu FFT
      */
     public FFT(boolean inverse) {
@@ -21,10 +22,11 @@ public class FFT {
 
     /**
      * Vypočítání FFT matice Complex[][]
+     *
      * @param matrix Complex[][]
      * @return Complex[][]
      */
-    public Complex[][] compute(Complex[][] matrix){
+    public Complex[][] compute(Complex[][] matrix) {
         //řádky
         for (int i = 0; i < matrix.length; i++) {
             matrix[i] = recursiveFFT(matrix[i]);
@@ -40,16 +42,17 @@ public class FFT {
 
     /**
      * Provádí rekurzivní výpočet FFT pro Complex[]
+     *
      * @param row Complex[]
      * @return Complex[]
      */
-    public Complex[] recursiveFFT(Complex[] row){
+    public Complex[] recursiveFFT(Complex[] row) {
         double angle;
         Complex[] result = new Complex[row.length];
         Complex[] evenIndexes, oddIndexes;
         Complex coefficient;
 
-        if(row.length == 1){
+        if (row.length == 1) {
             result[0] = row[0];
             return result;
         }
@@ -57,12 +60,11 @@ public class FFT {
         evenIndexes = recursiveFFT(getEvenIndexes(row));
         oddIndexes = recursiveFFT(getOddIndexes(row));
 
-        for (int i = 0; i < row.length / 2; i++){
-            if(!inverse){
+        for (int i = 0; i < row.length / 2; i++) {
+            if (!inverse) {
                 angle = -2.0 * Math.PI * i / row.length;
                 coefficient = new Complex(1.0 * Math.cos(angle), 1.0 * Math.sin(angle));
-            }
-            else{
+            } else {
                 angle = 2.0 * Math.PI * i / row.length;
                 coefficient = new Complex(1.0 * Math.cos(angle), 1.0 * Math.sin(angle));
             }
@@ -74,14 +76,15 @@ public class FFT {
 
     /**
      * Provede násobení po prvku 2 matic (Complex[][])
-     * @param first Complex[][]
+     *
+     * @param first  Complex[][]
      * @param second Complex[][]
      * @return Complex[][]
      */
-    public Complex[][] convolution(Complex[][] first, Complex[][] second){
+    public Complex[][] convolution(Complex[][] first, Complex[][] second) {
         Complex[][] newMatrix = new Complex[first.length][first[0].length];
-        for (int i = 0; i < first.length; i++){
-            for (int j = 0; j < first[i].length; j++){
+        for (int i = 0; i < first.length; i++) {
+            for (int j = 0; j < first[i].length; j++) {
                 newMatrix[i][j] = first[i][j].multiply(second[i][j]);
             }
         }
@@ -90,17 +93,18 @@ public class FFT {
 
     /**
      * Provede dělení po prvku 2 matic (Complex[][]) podle nastaveného prahu
-     * @param first Complex[][]
-     * @param second Complex[][]
+     *
+     * @param first     Complex[][]
+     * @param second    Complex[][]
      * @param threshold double
      * @return Complex[][]
      */
-    public Complex[][] deconvolution(Complex[][] first, Complex[][] second, double threshold){
+    public Complex[][] deconvolution(Complex[][] first, Complex[][] second, double threshold) {
         Complex[][] newMatrix = new Complex[first.length][first[0].length];
-        for (int i = 0; i < first.length; i++){
-            for (int j = 0; j < first[i].length; j++){
-                if(second[i][j].abs() < threshold){
-                    second[i][j] = new Complex(0.001,0.0);
+        for (int i = 0; i < first.length; i++) {
+            for (int j = 0; j < first[i].length; j++) {
+                if (second[i][j].abs() < threshold) {
+                    second[i][j] = new Complex(0.001, 0.0);
                 }
                 newMatrix[i][j] = first[i][j].divide(second[i][j]);
             }
@@ -110,10 +114,11 @@ public class FFT {
 
     /**
      * Vrátí největší intensitu z Complex[][]
+     *
      * @param matrix Complex[][]
      * @return double
      */
-    public double getMaxIntensity(Complex[][] matrix){
+    public double getMaxIntensity(Complex[][] matrix) {
         double intensity, maxValue = 0.0;
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -131,11 +136,12 @@ public class FFT {
 
     /**
      * Vytvoří BufferedImage frekvenční oblasti z Complex[][]
-     * @param image BufferedImage
+     *
+     * @param image  BufferedImage
      * @param matrix Complex[][]
      * @return BufferedImage
      */
-    public BufferedImage createFFTImage(BufferedImage image, Complex[][] matrix){
+    public BufferedImage createFFTImage(BufferedImage image, Complex[][] matrix) {
         double intensity;
         double maxValue = getMaxIntensity(matrix);
         for (int i = 0; i < matrix.length; i++) {
@@ -143,8 +149,8 @@ public class FFT {
                 Complex c = matrix[i][j];
                 double value = Math.sqrt(c.getReal() * c.getReal() + c.getImaginary() * c.getImaginary());
                 intensity = Math.log(value) / Math.log(maxValue);
-                intensity = Math.min(255,Math.max(0,(int)(intensity*255)));
-                image.setRGB(j, i, Utils.convertGrayLevelToRGB((int)intensity));
+                intensity = Math.min(255, Math.max(0, (int) (intensity * 255)));
+                image.setRGB(j, i, Utils.convertGrayLevelToRGB((int) intensity));
             }
         }
         return image;
@@ -152,17 +158,18 @@ public class FFT {
 
     /**
      * Vytvoří BufferedImage časové oblasti z Complex[][]
-     * @param image BufferedImage
+     *
+     * @param image  BufferedImage
      * @param matrix Complex[][]
      * @return BufferedImage
      */
-    public BufferedImage createIFFTImage(BufferedImage image, Complex[][] matrix){
+    public BufferedImage createIFFTImage(BufferedImage image, Complex[][] matrix) {
         int value;
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 Complex c = matrix[i][j];
-                value = (int)(c.getReal()/(matrix.length * matrix[i].length));
-                value = Math.min(255,Math.max(0,value));
+                value = (int) (c.getReal() / (matrix.length * matrix[i].length));
+                value = Math.min(255, Math.max(0, value));
                 image.setRGB(j, i, Utils.convertGrayLevelToRGB(value));
             }
         }
@@ -171,10 +178,11 @@ public class FFT {
 
     /**
      * Vycentruje BufferedImage pro zobrazení fourierovy transformace
+     *
      * @param image BufferedImage
      * @return BufferedImage
      */
-    public BufferedImage centerFFTImage(BufferedImage image){
+    public BufferedImage centerFFTImage(BufferedImage image) {
         int w = image.getWidth();
         int h = image.getHeight();
 
@@ -189,12 +197,13 @@ public class FFT {
 
     /**
      * Vrátí liché indexy pole
+     *
      * @param row Complex[]
      * @return Complex[]
      */
-    public Complex[] getOddIndexes(Complex[] row){
+    public Complex[] getOddIndexes(Complex[] row) {
         Complex[] array = new Complex[row.length / 2];
-        for (int i = 0; i < array.length; i++){
+        for (int i = 0; i < array.length; i++) {
             array[i] = row[2 * i + 1];
         }
         return array;
@@ -202,13 +211,14 @@ public class FFT {
 
     /**
      * Vrátí sudé indexy pole
+     *
      * @param row Complex[]
      * @return Complex[]
      */
-    public Complex[] getEvenIndexes(Complex[] row){
-        int length = row.length/2;
+    public Complex[] getEvenIndexes(Complex[] row) {
+        int length = row.length / 2;
         Complex[] array = new Complex[length];
-        for (int i = 0; i < length; i++){
+        for (int i = 0; i < length; i++) {
             array[i] = row[2 * i];
         }
         return array;
@@ -216,13 +226,14 @@ public class FFT {
 
     /**
      * Vrátí sloupec matice Complex[][] podle index
+     *
      * @param matrix Complex[][]
-     * @param index int
+     * @param index  int
      * @return Complex[]
      */
-    public Complex[] getColumn(Complex[][] matrix, int index){
+    public Complex[] getColumn(Complex[][] matrix, int index) {
         Complex[] column = new Complex[matrix.length];
-        for (int i = 0; i < matrix.length; i++){
+        for (int i = 0; i < matrix.length; i++) {
             column[i] = matrix[i][index];
         }
         return column;
@@ -230,13 +241,14 @@ public class FFT {
 
     /**
      * Upraví sloupec matice Complex[][] podle index
+     *
      * @param matrix Complex[][]
-     * @param index int
+     * @param index  int
      * @param column Complex[]
      * @return Complex[][]
      */
-    public Complex[][] setColumn(Complex[][] matrix, int index, Complex[] column){
-        for (int i = 0; i < matrix.length; i++){
+    public Complex[][] setColumn(Complex[][] matrix, int index, Complex[] column) {
+        for (int i = 0; i < matrix.length; i++) {
             matrix[i][index] = column[i];
         }
         return matrix;

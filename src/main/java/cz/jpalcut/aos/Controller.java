@@ -76,6 +76,11 @@ public class Controller {
         averagePain.setVisible(true);
     }
 
+    /**
+     * Vykreslení GUI podle select boxu
+     *
+     * @param method hodnota select boxu
+     */
     private void drawForm(int method) {
 
         if (matrixFFT == null) {
@@ -302,6 +307,9 @@ public class Controller {
 
     }
 
+    /**
+     * Načtení více obrázků
+     */
     public void openImages() {
         List<File> fileList = null;
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image", "*.jpg",
@@ -379,7 +387,7 @@ public class Controller {
                 matrixIFFT = matrix.clone();
                 bufferedImage = fft.createIFFTImage(bufferedImage, matrix);
 
-                if(matrix.length != height || matrix[0].length != width){
+                if (matrix.length != height || matrix[0].length != width) {
                     bufferedImage = Utils.restrictBufferedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), bufferedImage);
                 }
 
@@ -456,7 +464,7 @@ public class Controller {
     }
 
     /**
-     * Zobrazí vydělený FFT obrázek maskou, na kterou se aplikuje FFT
+     * Inverzní filtr
      */
     public void useInverseFilter() {
 
@@ -507,7 +515,7 @@ public class Controller {
                 bufferedImage = new BufferedImage(mask[0].length, mask.length, BufferedImage.TYPE_INT_RGB);
                 ifft.createIFFTImage(bufferedImage, mask);
 
-                if(mask.length != height || mask[0].length != width){
+                if (mask.length != height || mask[0].length != width) {
                     bufferedImage = Utils.restrictBufferedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), bufferedImage);
                 }
 
@@ -548,6 +556,12 @@ public class Controller {
         statusText.setTextFill(Color.web(color));
     }
 
+    /**
+     * Vrátí hodnotu podle indexu
+     *
+     * @param index index
+     * @return int
+     */
     private int getAreaSizeFromSelect(int index) {
         switch (index) {
             case 0:
@@ -565,6 +579,12 @@ public class Controller {
         }
     }
 
+    /**
+     * Vrátí hodnotu podle indexu
+     *
+     * @param index index
+     * @return int
+     */
     private int getAreaSizeFromSelectWithoutDirect(int index) {
         switch (index) {
             case 0:
@@ -580,6 +600,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Filtrace průměrováním
+     */
     public void useAverageFilter() {
 
         if (bufferedImage == null) {
@@ -620,6 +643,9 @@ public class Controller {
         new Thread(task).start();
     }
 
+    /**
+     * Modální filtrace
+     */
     public void useModalFilter() {
 
         if (bufferedImage == null) {
@@ -659,6 +685,9 @@ public class Controller {
         new Thread(task).start();
     }
 
+    /**
+     * Mediánový filtr
+     */
     public void useMedianFilter() {
 
         if (bufferedImage == null) {
@@ -698,6 +727,9 @@ public class Controller {
         new Thread(task).start();
     }
 
+    /**
+     * Průměrování sledu snímků
+     */
     public void useAverageImagesFilter() {
         clearFFTMatrix();
         tmp = Utils.cloneBufferedImage(bufferedImage);
@@ -735,6 +767,9 @@ public class Controller {
 
     }
 
+    /**
+     * Akce zpět
+     */
     public void actionBack() {
         bufferedImage = tmp;
         this.height = tmp.getHeight();
@@ -744,6 +779,9 @@ public class Controller {
         showImage();
     }
 
+    /**
+     * Filtrace maximem
+     */
     public void useMaxFilter() {
 
         if (bufferedImage == null) {
@@ -783,6 +821,9 @@ public class Controller {
         new Thread(task).start();
     }
 
+    /**
+     * Filtrace minimem
+     */
     public void useMinFilter() {
 
         if (bufferedImage == null) {
@@ -823,12 +864,18 @@ public class Controller {
         new Thread(task).start();
     }
 
+    /**
+     * Vyčištění hodnot FFT
+     */
     private void clearFFTMatrix() {
         fftButton.setDisable(false);
         matrixFFT = null;
         matrixIFFT = null;
     }
 
+    /**
+     * Konzervativní filtr
+     */
     public void useConservativeFilter() {
 
         if (bufferedImage == null) {
@@ -868,6 +915,9 @@ public class Controller {
         new Thread(task).start();
     }
 
+    /**
+     * Filtrace rotační maskou
+     */
     public void useRotationMaskFilter() {
         if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
@@ -902,6 +952,9 @@ public class Controller {
         new Thread(task).start();
     }
 
+    /**
+     * Zablokování základních prvků UI
+     */
     private void disableDefaultUI() {
         choiceBox.setDisable(true);
         openMI.setDisable(true);
@@ -909,6 +962,9 @@ public class Controller {
         saveAsMI.setDisable(true);
     }
 
+    /**
+     * Odblokování základních prvků UI
+     */
     private void enableDefaultUI() {
         choiceBox.setDisable(false);
         openMI.setDisable(false);
@@ -916,7 +972,10 @@ public class Controller {
         saveAsMI.setDisable(false);
     }
 
-    public void useHighLowPassFilter(){
+    /**
+     * Použití high pass and low pass filtru
+     */
+    public void useHighLowPassFilter() {
         if (bufferedImage == null) {
             setStatus("Obrázek nebyl načten.", "RED");
             return;
@@ -929,7 +988,7 @@ public class Controller {
 
         Integer radius = Utils.parseInteger(radiusTextField.getText());
 
-        if(radius == null){
+        if (radius == null) {
             setStatus("Poloměr musí být celé číslo.", "RED");
             return;
         }
@@ -951,7 +1010,7 @@ public class Controller {
                 image = fft.compute(image);
 
                 image = Utils.centerFFTMatrix(image);
-                image = Utils.insertCircle(image,highPass,radius);
+                image = Utils.insertCircle(image, highPass, radius);
                 image = Utils.centerFFTMatrix(image);
 
                 FFT ifft = new FFT(true);
@@ -960,7 +1019,7 @@ public class Controller {
                 bufferedImage = new BufferedImage(image[0].length, image.length, BufferedImage.TYPE_INT_RGB);
                 ifft.createIFFTImage(bufferedImage, image);
 
-                if(image.length != height || image[0].length != width){
+                if (image.length != height || image[0].length != width) {
                     bufferedImage = Utils.restrictBufferedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), bufferedImage);
                 }
 

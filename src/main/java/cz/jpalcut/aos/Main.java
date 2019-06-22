@@ -15,13 +15,14 @@ public class Main extends Application {
 
     /**
      * Vytvoření GUI
+     *
      * @param primaryStage
      * @throws Exception
      */
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         window = primaryStage;
-        FXMLLoader loader =  new FXMLLoader(getClass().getResource("/gui.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui.fxml"));
         Parent root = loader.load();
         window.setTitle("ZVI");
         window.setScene(new Scene(root, 1024, 768));
@@ -29,7 +30,7 @@ public class Main extends Application {
         window.show();
     }
 
-    public static Stage getStage(){
+    public static Stage getStage() {
         return window;
     }
 
