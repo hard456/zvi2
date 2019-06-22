@@ -38,6 +38,10 @@ public class Controller {
     public Button averageImageButton, ifftButton, fftButton, averageButton, modalButton, medianButton,
             averageChooseImageButton, maxFilterButton, minFilterButton, inverseFilterButton,
             conservativeButton, rotationMaskButton;
+    public AnchorPane highLowPassPain;
+    public ChoiceBox highLowPassSelect;
+    public Button highLowPassButton;
+    public TextField radiusTextField;
 
     @FXML
     TextField deconvolutionMask, thresholdField;
@@ -51,7 +55,7 @@ public class Controller {
     @FXML
     Label statusText;
 
-    int width, height;
+    private int width, height;
 
     private BufferedImage tmp, bufferedImage;
 
@@ -63,7 +67,7 @@ public class Controller {
     protected void initialize() {
         choiceBox.setItems(FXCollections.observableArrayList("Průměrování v okolí bodu", "Modální filtrace", "Mediánová filtrace",
                 "Průměr sledů snímků", "Filtrace maximem", "Filtrace minimem", "FFT obrázku", "IFFT obrázku", "Inverzní filter",
-                "Konzervativní filtr - pepř a sůl", "Filtrace rotováním masky"));
+                "Konzervativní filtr - pepř a sůl", "Filtrace rotováním masky", "Horní a dolní propust"));
         choiceBox.getSelectionModel().select(0);
 
         choiceBox.getSelectionModel().selectedIndexProperty().addListener(
@@ -93,6 +97,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 1:
                 modalPain.setVisible(true);
@@ -106,6 +111,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 2:
                 medianPain.setVisible(true);
@@ -119,6 +125,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 3:
                 averageImagePain.setVisible(true);
@@ -132,6 +139,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 4:
                 maxPain.setVisible(true);
@@ -145,6 +153,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 5:
                 minPain.setVisible(true);
@@ -158,6 +167,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 6:
                 fftPain.setVisible(true);
@@ -171,6 +181,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 7:
                 ifftPain.setVisible(true);
@@ -184,6 +195,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 8:
                 inverseFilterPain.setVisible(true);
@@ -197,6 +209,7 @@ public class Controller {
                 minPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 9:
                 conservativePain.setVisible(true);
@@ -210,9 +223,25 @@ public class Controller {
                 maxPain.setVisible(false);
                 minPain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
             case 10:
                 rotationMaskPain.setVisible(true);
+                conservativePain.setVisible(false);
+                inverseFilterPain.setVisible(false);
+                ifftPain.setVisible(false);
+                fftPain.setVisible(false);
+                averagePain.setVisible(false);
+                modalPain.setVisible(false);
+                medianPain.setVisible(false);
+                averageImagePain.setVisible(false);
+                maxPain.setVisible(false);
+                minPain.setVisible(false);
+                highLowPassPain.setVisible(false);
+                break;
+            case 11:
+                highLowPassPain.setVisible(true);
+                rotationMaskPain.setVisible(false);
                 conservativePain.setVisible(false);
                 inverseFilterPain.setVisible(false);
                 ifftPain.setVisible(false);
@@ -236,6 +265,7 @@ public class Controller {
                 inverseFilterPain.setVisible(false);
                 conservativePain.setVisible(false);
                 rotationMaskPain.setVisible(false);
+                highLowPassPain.setVisible(false);
                 break;
         }
     }
@@ -396,7 +426,6 @@ public class Controller {
                 } else {
 
                     matrix = Utils.create2DComplexArray(bufferedImage);
-
                     if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
                         matrix = Utils.fillingMatrixToPowTwo(matrix);
                     }
@@ -408,6 +437,7 @@ public class Controller {
                 bufferedImage = new BufferedImage(matrix[0].length, matrix.length, BufferedImage.TYPE_INT_RGB);
 
                 matrixFFT = matrix.clone();
+
                 fft.createFFTImage(bufferedImage, matrix);
                 bufferedImage = fft.centerFFTImage(bufferedImage);
                 showImage();
@@ -884,6 +914,67 @@ public class Controller {
         openMI.setDisable(false);
         backButton.setDisable(false);
         saveAsMI.setDisable(false);
+    }
+
+    public void useHighLowPassFilter(){
+        if (bufferedImage == null) {
+            setStatus("Obrázek nebyl načten.", "RED");
+            return;
+        }
+
+        disableDefaultUI();
+        highLowPassButton.setDisable(true);
+        tmp = Utils.cloneBufferedImage(bufferedImage);
+        clearFFTMatrix();
+
+        Integer radius = Utils.parseInteger(radiusTextField.getText());
+
+        if(radius == null){
+            setStatus("Poloměr musí být celé číslo.", "RED");
+            return;
+        }
+
+        boolean highPass = highLowPassSelect.getSelectionModel().selectedIndexProperty().getValue() == 0;
+
+        Task task = new Task<Void>() {
+            @Override
+            public Void call() {
+                Complex[][] image;
+                FFT fft = new FFT(false);
+
+                image = Utils.create2DComplexArray(bufferedImage);
+
+                if (!Utils.isNumberPowerOfTwo(bufferedImage.getWidth()) || !Utils.isNumberPowerOfTwo(bufferedImage.getHeight())) {
+                    image = Utils.fillingMatrixToPowTwo(image);
+                }
+
+                image = fft.compute(image);
+
+                image = Utils.centerFFTMatrix(image);
+                image = Utils.insertCircle(image,highPass,radius);
+                image = Utils.centerFFTMatrix(image);
+
+                FFT ifft = new FFT(true);
+                image = ifft.compute(image);
+
+                bufferedImage = new BufferedImage(image[0].length, image.length, BufferedImage.TYPE_INT_RGB);
+                ifft.createIFFTImage(bufferedImage, image);
+
+                if(image.length != height || image[0].length != width){
+                    bufferedImage = Utils.restrictBufferedImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), bufferedImage);
+                }
+
+                showImage();
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> {
+            setStatus("Byl aplikován filter horní nebo dolní propusti.", "GREEN");
+            enableDefaultUI();
+            highLowPassButton.setDisable(false);
+        });
+        setStatus("Provádí se filter horní nebo dolní propusti.", "BLUE");
+        new Thread(task).start();
     }
 
 }

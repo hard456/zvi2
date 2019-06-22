@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -315,6 +316,47 @@ public class Utils {
             }
         }
         return first;
+    }
+
+    public static Complex[][] insertCircle(Complex[][] matrix, boolean inside, int radius){
+        int height = matrix.length;
+        int width = matrix[0].length;
+        for (int i = 0; i < height; i++){
+            for (int j = 0; j < width; j++){
+                if(Math.pow(j-width/2,2.0)+Math.pow(i-height/2,2.0) < Math.pow(radius, 2.0) && inside){
+                    matrix[i][j] = new Complex(0.0,0.0);
+                }
+                else if(Math.pow(j-width/2,2.0)+Math.pow(i-height/2,2.0) > Math.pow(radius, 2.0) && !inside){
+                    matrix[i][j] = new Complex(0.0,0.0);
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public static Complex[][] centerFFTMatrix(Complex[][] matrix){
+        int height = matrix.length;
+        int width = matrix[0].length;
+        Complex[][] newMatrix = new Complex[height][width];
+
+        for (int i = 0; i < height/2; i++){
+            for (int j = 0; j < width/2; j++){
+                newMatrix[i][j] = matrix[height/2+i][width/2+j];
+                newMatrix[height/2+i][width/2+j] = matrix[i][j];
+                newMatrix[i][width/2+j] = matrix[height/2+i][j];
+                newMatrix[height/2+i][j] = matrix[i][width/2+j];
+            }
+        }
+
+        return newMatrix;
+    }
+
+    public static Integer parseInteger(String number){
+        try {
+            return Integer.parseInt(number);
+        }catch (Exception e){
+            return null;
+        }
     }
 
 }

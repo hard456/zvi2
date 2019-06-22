@@ -212,6 +212,22 @@
                                     prefWidth="180" text="Provést"/>
                         </AnchorPane>
 
+                        <!-- HIGH AND LOW PASS FILTER -->
+                        <AnchorPane fx:id="highLowPassPain" visible="false" layoutY="105.0">
+                            <ChoiceBox fx:id="highLowPassSelect" focusTraversable="false" layoutX="10.0" prefWidth="180" value="Horní propust">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="Horní propust" />
+                                        <String fx:value="Dolní propust" />
+                                    </FXCollections>
+                                </items>
+                            </ChoiceBox>
+                            <Label layoutX="10" layoutY="30.0">Poloměr:</Label>
+                            <TextField fx:id="radiusTextField" layoutX="10" layoutY="50.0" prefWidth="180.0" focusTraversable="false" text="5"/>
+                            <Button fx:id="highLowPassButton" layoutX="10.0" layoutY="80" mnemonicParsing="false" onAction="#useHighLowPassFilter"
+                                    prefWidth="180" text="Provést"/>
+                        </AnchorPane>
+
                     </children>
                 </AnchorPane>
             </left>
