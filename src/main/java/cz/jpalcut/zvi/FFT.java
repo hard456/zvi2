@@ -1,4 +1,4 @@
-package cz.jpalcut.aos;
+package cz.jpalcut.zvi;
 
 import org.apache.commons.math3.complex.Complex;
 

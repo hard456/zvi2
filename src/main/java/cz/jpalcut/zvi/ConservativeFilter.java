@@ -1,13 +1,13 @@
-package cz.jpalcut.aos;
+package cz.jpalcut.zvi;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Filtrace mediánem oblasti
+ * Konzervativní filtr - pepř a sůl
  */
-public class MedianFilter {
+public class ConservativeFilter {
 
     /**
      * Filtrace 4-okolím
@@ -18,6 +18,7 @@ public class MedianFilter {
     public int[][] processDirectFilter(int[][] array) {
         int height = array.length;
         int width = array[0].length;
+        int max, min;
 
         int[][] newArray = new int[height][width];
         List<Integer> items = new ArrayList<>();
@@ -36,7 +37,16 @@ public class MedianFilter {
                 if (Utils.isItemOfArray(height, width, i + 1, j)) {
                     items.add(array[i + 1][j]);
                 }
-                newArray[i][j] = getMedian(items);
+                max = Collections.max(items);
+                min = Collections.min(items);
+
+                if (newArray[i][j] > max) {
+                    newArray[i][j] = max;
+                } else if (newArray[i][j] < min) {
+                    newArray[i][j] = min;
+                } else {
+                    newArray[i][j] = array[i][j];
+                }
                 items.clear();
             }
         }
@@ -53,6 +63,7 @@ public class MedianFilter {
     public int[][] processAreaFilter(int[][] array, int area) {
         int height = array.length;
         int width = array[0].length;
+        int max, min;
 
         int[][] newArray = new int[height][width];
         List<Integer> items = new ArrayList<>();
@@ -67,27 +78,20 @@ public class MedianFilter {
                         }
                     }
                 }
+                max = Collections.max(items);
+                min = Collections.min(items);
 
-                newArray[i][j] = getMedian(items);
+                if (newArray[i][j] > max) {
+                    newArray[i][j] = max;
+                } else if (newArray[i][j] < min) {
+                    newArray[i][j] = min;
+                } else {
+                    newArray[i][j] = array[i][j];
+                }
                 items.clear();
             }
         }
         return newArray;
-    }
-
-    /**
-     * Získání mediánu z seznam
-     *
-     * @param items seznam prvků
-     * @return medián
-     */
-    private int getMedian(List<Integer> items) {
-        Collections.sort(items);
-        if (items.size() % 2 == 0) {
-            return (items.get((items.size() / 2) - 1) + items.get(items.size() / 2)) / 2;
-        } else {
-            return items.get(items.size() / 2);
-        }
     }
 
 }

@@ -1,4 +1,4 @@
-package cz.jpalcut.aos;
+package cz.jpalcut.zvi;
 
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;

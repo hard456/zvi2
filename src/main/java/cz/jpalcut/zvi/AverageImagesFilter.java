@@ -1,4 +1,4 @@
-package cz.jpalcut.aos;
+package cz.jpalcut.zvi;
 
 /**
  * Průměrování hodnot přes více snímků

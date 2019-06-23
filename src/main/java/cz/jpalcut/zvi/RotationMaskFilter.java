@@ -1,4 +1,4 @@
-package cz.jpalcut.aos;
+package cz.jpalcut.zvi;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,13 +1,14 @@
-package cz.jpalcut.aos;
+package cz.jpalcut.zvi;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Konzervativní filtr - pepř a sůl
+ * Modální filtrace
  */
-public class ConservativeFilter {
+public class ModalFilter {
 
     /**
      * Filtrace 4-okolím
@@ -18,7 +19,6 @@ public class ConservativeFilter {
     public int[][] processDirectFilter(int[][] array) {
         int height = array.length;
         int width = array[0].length;
-        int max, min;
 
         int[][] newArray = new int[height][width];
         List<Integer> items = new ArrayList<>();
@@ -37,16 +37,7 @@ public class ConservativeFilter {
                 if (Utils.isItemOfArray(height, width, i + 1, j)) {
                     items.add(array[i + 1][j]);
                 }
-                max = Collections.max(items);
-                min = Collections.min(items);
-
-                if (newArray[i][j] > max) {
-                    newArray[i][j] = max;
-                } else if (newArray[i][j] < min) {
-                    newArray[i][j] = min;
-                } else {
-                    newArray[i][j] = array[i][j];
-                }
+                newArray[i][j] = getMostCommonElement(items);
                 items.clear();
             }
         }
@@ -63,7 +54,6 @@ public class ConservativeFilter {
     public int[][] processAreaFilter(int[][] array, int area) {
         int height = array.length;
         int width = array[0].length;
-        int max, min;
 
         int[][] newArray = new int[height][width];
         List<Integer> items = new ArrayList<>();
@@ -78,20 +68,41 @@ public class ConservativeFilter {
                         }
                     }
                 }
-                max = Collections.max(items);
-                min = Collections.min(items);
 
-                if (newArray[i][j] > max) {
-                    newArray[i][j] = max;
-                } else if (newArray[i][j] < min) {
-                    newArray[i][j] = min;
-                } else {
-                    newArray[i][j] = array[i][j];
-                }
+                newArray[i][j] = getMostCommonElement(items);
                 items.clear();
             }
         }
         return newArray;
+    }
+
+    /**
+     * Vrátí nejčetnější prvek seznamu
+     *
+     * @param items seznam prvků
+     * @return nejčetnější prvek
+     */
+    private int getMostCommonElement(List<Integer> items) {
+        Collections.sort(items);
+
+        int maxCount = 1, item = items.get(0), currCount = 1;
+        for (int i = 1; i < items.size(); i++) {
+            if (Objects.equals(items.get(i), items.get(i - 1)))
+                currCount++;
+            else {
+                if (currCount > maxCount) {
+                    maxCount = currCount;
+                    item = items.get(i - 1);
+                }
+                currCount = 1;
+            }
+        }
+
+        if (currCount > maxCount) {
+            item = items.get(items.size() - 1);
+        }
+
+        return item;
     }
 
 }

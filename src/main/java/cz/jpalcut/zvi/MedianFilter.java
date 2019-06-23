@@ -1,20 +1,13 @@
-package cz.jpalcut.aos;
+package cz.jpalcut.zvi;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Filtrace maximální nebo minimální hodnotou okolí
+ * Filtrace mediánem oblasti
  */
-public class MaxMinFilter {
-
-    //true - filtrace maximem
-    private boolean max;
-
-    public MaxMinFilter(boolean max) {
-        this.max = max;
-    }
+public class MedianFilter {
 
     /**
      * Filtrace 4-okolím
@@ -43,13 +36,7 @@ public class MaxMinFilter {
                 if (Utils.isItemOfArray(height, width, i + 1, j)) {
                     items.add(array[i + 1][j]);
                 }
-
-                if (max) {
-                    newArray[i][j] = Collections.max(items);
-                } else {
-                    newArray[i][j] = Collections.min(items);
-                }
-
+                newArray[i][j] = getMedian(items);
                 items.clear();
             }
         }
@@ -81,17 +68,26 @@ public class MaxMinFilter {
                     }
                 }
 
-                if (max) {
-                    newArray[i][j] = Collections.max(items);
-                } else {
-                    newArray[i][j] = Collections.min(items);
-                }
-
+                newArray[i][j] = getMedian(items);
                 items.clear();
             }
         }
         return newArray;
     }
 
+    /**
+     * Získání mediánu z seznam
+     *
+     * @param items seznam prvků
+     * @return medián
+     */
+    private int getMedian(List<Integer> items) {
+        Collections.sort(items);
+        if (items.size() % 2 == 0) {
+            return (items.get((items.size() / 2) - 1) + items.get(items.size() / 2)) / 2;
+        } else {
+            return items.get(items.size() / 2);
+        }
+    }
 
 }
