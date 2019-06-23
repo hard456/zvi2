@@ -981,17 +981,19 @@ public class Controller {
             return;
         }
 
-        disableDefaultUI();
-        highLowPassButton.setDisable(true);
-        tmp = Utils.cloneBufferedImage(bufferedImage);
-        clearFFTMatrix();
-
         Integer radius = Utils.parseInteger(radiusTextField.getText());
 
         if (radius == null) {
             setStatus("Poloměr musí být celé číslo.", "RED");
             return;
         }
+
+
+        disableDefaultUI();
+        highLowPassButton.setDisable(true);
+        tmp = Utils.cloneBufferedImage(bufferedImage);
+        clearFFTMatrix();
+
 
         boolean highPass = highLowPassSelect.getSelectionModel().selectedIndexProperty().getValue() == 0;
 
